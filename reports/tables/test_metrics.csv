@@ -1,0 +1,6 @@
+﻿metric,value
+accuracy,0.975
+precision_ckd,1.0
+recall_ckd,0.96
+f1_ckd,0.9796
+roc_auc,0.9993
