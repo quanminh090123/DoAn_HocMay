@@ -49,6 +49,15 @@ def validate_input(df: pd.DataFrame) -> tuple[pd.DataFrame | None, list[str]]:
         values = cleaned[col].dropna()
         if (values < 0).any():
             errors.append(f"{LABELS[col]} ({col}) không được là số âm.")
+    # Kiểm tra các giá trị hợp lệ của sg, al, su
+    allowed_sg = [1.005, 1.010, 1.015, 1.020, 1.025]
+
+    if not cleaned["sg"].dropna().isin(allowed_sg).all():
+        errors.append("Tỷ trọng nước tiểu (sg) không hợp lệ.")
+
+    for col in ["al", "su"]:
+        if not cleaned[col].dropna().isin(range(6)).all():
+            errors.append(f"{LABELS[col]} ({col}) phải có giá trị từ 0 đến 5.")
 
     if (cleaned["age"].dropna() > 120).any():
         errors.append("Tuổi không được lớn hơn 120 (giới hạn giao diện demo).")
@@ -139,7 +148,6 @@ with tab_single:
 with tab_csv:
     st.subheader("Dự đoán nhiều bệnh nhân từ file CSV")
     st.write("CSV cần đủ 24 cột đầu vào; có thể có thêm `id` và `classification`.")
-    st.caption(f"Giới hạn minh họa: tối đa {MAX_ROWS} bệnh nhân mỗi lần.")
     uploaded = st.file_uploader("Chọn CSV (dấu phẩy)", type=["csv"], key="batch_upload")
     if uploaded is not None:
         try:
